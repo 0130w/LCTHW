@@ -82,8 +82,10 @@ struct Connection *Database_open(const char *filename, char mode, int max_rows, 
 	if(!conn->db)
 		die(conn, "Memory error");
 
-	conn->db->max_rows = max_rows;
-	conn->db->max_data = max_data;
+	if(mode == 'c') {
+		conn->db->max_rows = max_rows;
+		conn->db->max_data = max_data;
+	}
 
 	if(mode == 'c') {
 		conn->file = fopen(filename, "w");
@@ -119,9 +121,7 @@ void Database_create(struct Connection *conn)
 {
 	int i = 0;
 	
-	// for(i = 0; i < MAX_ROWS; ++i) {
-	// changed
-	for(i = 0; i < conn->db->max_rows; ++i) {
+	for(i = 0; i < MAX_ROWS; ++i) {
 		// make a prototype to initialize it
 		struct Address addr = {.id = i, .set = 0};
 		// then just assign it
@@ -140,18 +140,13 @@ void Database_set(struct Connection *conn, int id, const char *name, const char 
 	// WARNING: bug, read the "How To Break it" and fix this
 	char *res;
 
-	// res = strncpy(addr->name, name, MAX_DATA);
-	res = strncpy(addr->name, name, conn->db->max_data);
-
-	//addr->name[MAX_DATA - 1] = '\0';
-	addr->name[conn->db->max_data - 1] = '\0';
+	res = strncpy(addr->name, name, MAX_DATA);
+	addr->name[MAX_DATA - 1] = '\0';
 	if(!res)
 		die(conn, "Name copy failed");
-	
-	// res = strncpy(addr->email, email. MAX_DATA);
-	res = strncpy(addr->email,email, conn->db->max_data);
-	// addr->email[MAX_DATA - 1] = '\0';
-	addr->email[conn->db->max_data - 1] = '\0';
+		
+	res = strncpy(addr->email,email,MAX_DATA);
+	addr->email[MAX_DATA - 1] = '\0';
 	if(!res)
 		die(conn, "Email copy failed");
 }
@@ -176,8 +171,7 @@ void Database_delete(struct Connection *conn, int id)
 void Database_list(struct Connection *conn)
 {
 	int i = 0;
-	// for(i = 0; i < MAX_ROWS; ++i) {
-	for(i = 0; i < conn->db->max_rows; ++i) {
+	for(i = 0; i < MAX_ROWS; ++i) {
 		if(conn->db->rows[i].set) {
 			Address_print(&(conn->db->rows[i]));
 		}
@@ -193,27 +187,25 @@ int main(int argc, char *argv[])
 	char *filename = argv[1];
 	char action = argv[2][0];
 
-	// changed
 	int max_rows = 0;
 	int max_data = 0;
+
 	if(action == 'c') {
 		max_rows = atoi(argv[3]);
 		max_data = atoi(argv[4]);
 	}
-	// end
 
 	struct Connection *conn = Database_open(filename, action, max_rows, max_data);
 	int id = 0;
 
 	if(argc > 3 && action != 'c') id = atoi(argv[3]); // 将参数(address编号)转为整型
-	if(id >= MAX_ROWS && action != 'c')
+	if(id >= MAX_ROWS)
 		die(conn, "There's not that many records.");
 
 	switch(action) {
 		case 'c':
 			Database_create(conn);
 			Database_write(conn);
-			printf("max_rows:%d, max_data:%d\n",conn->db->max_rows, conn->db->max_data);
 			break;
 
 		case 'g':
@@ -221,7 +213,6 @@ int main(int argc, char *argv[])
 				die(conn, "Need an ID to get");
 
 			Database_get(conn,id);
-			printf("max_rows:%d, max_data:%d\n",conn->db->max_rows, conn->db->max_data);
 			break;
 
 		case 's':
@@ -230,7 +221,6 @@ int main(int argc, char *argv[])
 			
 			Database_set(conn,id,argv[4],argv[5]);
 			Database_write(conn);
-			printf("max_rows:%d, max_data:%d\n",conn->db->max_rows, conn->db->max_data);
 			break;
 
 		case 'd':
@@ -239,12 +229,10 @@ int main(int argc, char *argv[])
 			}
 			Database_delete(conn,id);
 			Database_write(conn);
-			printf("max_rows:%d, max_data:%d\n",conn->db->max_rows, conn->db->max_data);
 			break;
 
 		case 'l':
 			Database_list(conn);
-			printf("max_rows:%d, max_data:%d\n",conn->db->max_rows, conn->db->max_data);
 			break;
 
 		default:
