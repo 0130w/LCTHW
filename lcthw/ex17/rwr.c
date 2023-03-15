@@ -15,9 +15,7 @@ struct Address {
 };
 
 struct Database {
-	int max_rows;
-	int max_data;
-	struct Address rows[MAX_ROWS];
+	struct Address *rows;
 };
 
 // 将某个文件与其相对应的数据链接
@@ -30,6 +28,7 @@ void Database_close(struct Connection *conn)
 {
 	if(conn) {
 		if(conn->file)	fclose(conn->file);
+		if(conn->db->rows)	free(conn->db->rows);
 		if(conn->db)	free(conn->db);
 		free(conn);
 	}
@@ -82,10 +81,9 @@ struct Connection *Database_open(const char *filename, char mode, int max_rows, 
 	if(!conn->db)
 		die(conn, "Memory error");
 
-	if(mode == 'c') {
-		conn->db->max_rows = max_rows;
-		conn->db->max_data = max_data;
-	}
+	conn->db->rows = malloc(sizeof(struct Address) * MAX_ROWS);
+	if(!conn->db->rows)
+		die(conn, "Memory error");
 
 	if(mode == 'c') {
 		conn->file = fopen(filename, "w");
@@ -111,6 +109,10 @@ void Database_write(struct Connection *conn)
 
 	if(rc != 1)
 		die(conn, "Failed to write database.");
+
+	rc = fwrite(conn->db->rows, sizeof(struct Address), MAX_ROWS, conn->file);
+	if(rc != MAX_ROWS)
+		die(conn, "Failed to write content.");
 
 	rc = fflush(conn->file);
 	if(rc == -1) // EOF == -1
@@ -199,7 +201,7 @@ int main(int argc, char *argv[])
 	int id = 0;
 
 	if(argc > 3 && action != 'c') id = atoi(argv[3]); // 将参数(address编号)转为整型
-	if(id >= MAX_ROWS)
+	if(id >= MAX_ROWS && action != 'c')
 		die(conn, "There's not that many records.");
 
 	switch(action) {
