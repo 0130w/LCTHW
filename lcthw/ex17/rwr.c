@@ -69,6 +69,10 @@ void Database_load(struct Connection *conn)
 	int rc = fread(conn->db,sizeof(struct Database), 1, conn->file);
 	if(rc != 1)
 		die(conn, "Failed to load database.");
+
+	rc = fread(conn->db->rows, sizeof(struct Address), MAX_ROWS, conn->file);
+	if(rc != MAX_ROWS)
+		die(conn, "Failed to load database.");
 }
 
 struct Connection *Database_open(const char *filename, char mode, int max_rows, int max_data)
