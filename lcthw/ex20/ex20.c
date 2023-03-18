@@ -25,8 +25,8 @@ void test_log_warn()
 
 void test_log_info()
 {
-	log_info("Well I did something mundane.");
-	log_info("It happened %f times today.", 1.3f);
+	log_info("test_log_info", "Well I did something mundane.");
+	log_info("test_log_info", "It happened %f times today.", 1.3f);
 }
 
 int test_check(char *file_name)
@@ -59,7 +59,7 @@ int test_sentinel(int code)
 
 	switch(code) {
 		case 1:
-			log_info("It worked.");
+			log_info("test_sentinel", "It worked.");
 			break;
 		default:
 			sentinel("test_sentinel", "I shouldn't run.");

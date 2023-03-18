@@ -19,7 +19,7 @@
 
 #define log_warn(N, M, ...) fprintf(stderr, "[WARN] (%s:%d: errno: %s) in [FUNC]: " N " " M "\n", __FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
 
-#define log_info(M, ...) fprintf(stderr, "[INFO] (%s:%d) " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+#define log_info(N, M, ...) fprintf(stderr, "[INFO] (%s:%d) in [FUNC]: " N " " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
 #define check(A, N, M, ...) if(!(A)) { log_err(N, M, ##__VA_ARGS__); errno=0; goto error; }
 
