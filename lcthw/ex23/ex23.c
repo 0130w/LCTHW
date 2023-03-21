@@ -34,14 +34,73 @@ int duffs_device(char *from, char *to, int count)
 
 int zeds_device(char *from, char *to, int count)
 {
-	{
 		int n = (count + 7) / 8;
 		
 		switch(count % 8) {
 			case 0:
 				again: *to++ = *from++;
-				case 7: 
+				case 7: *to++ = *from++;
+                case 6: *to++ = *from++;
+                case 5: *to++ = *from++;
+                case 4: *to++ = *from++;
+                case 3: *to++ = *from++;
+                case 2: *to++ = *from++;
+                case 1: *to++ = *from++;
+                        if(--n > 0)
+                            goto again;
+        }
+
+        return count;
+
 }
 
+int valid_copy(char *data, int count, char expects)
+{
+    int i = 0;
+    for(i = 0; i < count; i++) {
+        if(data[i] != expects) {
+            log_err("valid_copy", "[%d] %c != %c", i, data[i], expects);
+            return 0;
+        }
+    }
 
+    return 1;
+}
+
+int main(int argc, char **argv)
+{
+    char from[1000] = {'a'};
+    for(int k = 0; k < 1000; ++k) {
+        printf("%c",from[k]);
+    }
+
+    char to[1000] = {'c'};
+    int rc = 0;
+
+    // setup the from to have some stuff
+    memset(from, 'x', 1000);
+    // set it to a failure mode
+    memset(to, 'y', 1000);
+    check(valid_copy(to, 1000, 'y'), "main", "Not initialized right.");
+
+    // reset
+    memset(to, 'y', 1000);
+
+    // duffs version
+    rc = duffs_device(from, to, 1000);
+    check(rc == 1000, "main", "Duff's device failed: %d", rc);
+    check(valid_copy(to, 1000, 'x'), "main", "Duff's device failed copy.");
+
+    // reset
+    memset(to, 'y', 1000);
+
+    // zed's version
+    rc = zeds_device(from, to, 1000);
+    check(rc == 1000, "main", "Zed's device failed: %d", rc);
+    check(valid_copy(to, 1000, 'x'), "main", "Zed's device failed copy.");
+
+    return 0;
+
+error:
+    return 1;
 }

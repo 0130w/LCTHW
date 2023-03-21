@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include "dbg.h"
+#include <dlfcn.h>
+
+typedef int (*lib_function)(const char *data);
+
+int main(int argc, char** argv)
+{
+	int rc = 0;
+	check(argc == 4, "main", "USAGE: ex29_tests libex29.so function data");
+
+	char *lib_file = argv[1];
+	char *func_to_run = argv[2];
+	char *data = argv[3];
+
+	void *lib = dlopen(lib_file, RTLD_NOW);
+	check(lib != NULL, "main", "Failed to open the library %s: %s", lib_file, dlerror());
+
+	// dlsym这个函数有点意思	
+	lib_function func = dlsym(lib, func_to_run);
+	check(func != NULL, "main", "Did not find %s function in the library %s: %s", func_to_run, lib_file, dlerror());
+
+	rc = func(data);
+	check(rc == 0, "main", "Function %s return %d for data: %s", func_to_run, rc, data);
+
+	rc = dlclose(lib);
+	check(rc == 0, "main", "Failed to close %s", lib_file);
+
+	return 0;
+
+error:
+	return 1;
+}

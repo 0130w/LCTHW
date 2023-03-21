@@ -8,7 +8,7 @@ OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 TEST_SRC=$(wildcard tests/*_tests.c)
 TESTS=$(patsubst %.c,%,$(TEST_SRC))
 
-TARGET=build/libYOUR_LIBRARY.a
+TARGET=build/libex29.a
 SO_TARGET=$(patsubst %.a,%.so,$(TARGET))
 
 # The Target Build
@@ -31,9 +31,15 @@ build:
 
 # The Unit Tests
 .PHONY:	tests
-tests:	CFLAGS += $(TARGET)
+tests:	$(TESTS)+=$(TARGET)
 tests:	$(TESTS)
-		sh ./tests/runtests.sh
+		./tests/ex29_tests ./build/libex29.so print_a_message "hello there"
+		./tests/ex29_tests ./build/libex29.so uppercase "hello there"
+		./tests/ex29_tests ./build/libex29.so lowercase "HELLO tHeRe"
+		./tests/ex29_tests ./build/libex29.so fail_on_purpose "i fail"
+		./tests/ex29_tests ./build/libex29.so fail_on_purpose 
+		./tests/ex29_tests ./build/libex29.so adfasfasdf asdfadff
+		./tests/ex29_tests ./build/libex.so adfasfasdf asdfadff
 
 valgrind:
 	VALGRIND="valgrind --log-file=/tmp/valgrind-%p.log" $(MAKE)
