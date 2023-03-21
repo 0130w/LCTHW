@@ -1,9 +1,9 @@
-DEBUG tests/libex29_tests.c:39: ----- RUNNING: ./tests/libex29_tests
-DEBUG tests/libex29_tests.c:31: 
+DEBUG tests/libex29_tests.c:66: ----- RUNNING: ./tests/libex29_tests
+DEBUG tests/libex29_tests.c:58: 
 ----- test_dlopen
-DEBUG tests/libex29_tests.c:32: 
+DEBUG tests/libex29_tests.c:59: 
 ----- test_functions
-DEBUG tests/libex29_tests.c:33: 
+DEBUG tests/libex29_tests.c:60: 
 ----- test_failures
-DEBUG tests/libex29_tests.c:34: 
+DEBUG tests/libex29_tests.c:61: 
 ----- test_dlclose

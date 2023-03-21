@@ -8,7 +8,7 @@
 
 #define mu_suite_start() char *message = NULL
 
-#define mu_assert(test, message) if(!(test)) { log_error("mu_assert", message); return message; }
+#define mu_assert(test, message) if(!(test)) { log_err("mu_assert", message); return message; }
 #define mu_run_test(test) debug("\n-----%s", " "#test); \
 	message = test(); tests_run++; if(message) return message;
 
