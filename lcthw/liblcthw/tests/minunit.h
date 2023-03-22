@@ -3,7 +3,7 @@
 #define _minunit_h
 
 #include <stdio.h>
-#include "../src/lcthw/dbg.h"
+#include <lcthw/dbg.h> 
 #include <stdlib.h>
 
 #define mu_suite_start() char *message = NULL
@@ -14,7 +14,7 @@
 
 #define RUN_TESTS(name) int main(int argc, char **argv) {\
 	argc = 1; \
-	debug("----- RUNNING: %s", argv[0]);\
+	debug("\n----- RUNNING: %s", argv[0]);\
 	char *result = name();\
 	if(result != 0) {\
 		printf("FAILED: %s\n", result);\
