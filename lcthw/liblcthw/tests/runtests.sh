@@ -9,6 +9,8 @@ do
         echo "------"
         tail tests/tests.log
         exit 1
+    else
+        echo $i PASS
     fi
 done
 
