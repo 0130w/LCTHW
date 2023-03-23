@@ -24,7 +24,7 @@ int List_bubble_sort(List *words, List_compare cmp)
     while(flag == 1) {
         flag = 0;
         LIST_FOREACH(words, first, next, now) { 
-            if(cmp(now->value, now->next->value) > 0) {
+            if(now->next != NULL && cmp(now->value, now->next->value) > 0) {
                 List_swap(now, now->next);
                 flag = 1;
             }
@@ -41,10 +41,10 @@ List *List_merge(List *s1, List *s2, List_compare cmp)
     void *value = NULL;
     while(s1->count > 0 && s2->count > 0) {
         if(cmp(s1->first->value, s2->first->value) > 0) {
-            value = List_shift(s1);
+            value = List_shift(s2);
             List_push(result, value);
         } else {
-            value = List_shift(s2);
+            value = List_shift(s1);
             List_push(result, value);
         }
     }
@@ -65,7 +65,7 @@ List *List_merge(List *s1, List *s2, List_compare cmp)
 
 List *List_merge_sort(List *words, List_compare cmp)
 {
-    if(List_count(words) == 1) {
+    if(List_count(words) <= 1) {
         return words;
     }
     List *s1 = List_create();
