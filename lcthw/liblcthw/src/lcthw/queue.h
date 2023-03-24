@@ -1,5 +1,5 @@
-#ifndef lcthw_Queue_h
-#define lcthw_Queue.h
+#ifndef _lcthw_Queue_h
+#define _lcthw_Queue_h
 
 #include <lcthw/list.h>
 
